@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PharmaScan AI - Panneau de Contrôle Administrateur</title>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- FontAwesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    :root {
+      --bg-dark: #070b13;
+      --bg-card: rgba(15, 23, 42, 0.65);
+      --border-color: rgba(255, 255, 255, 0.08);
+      --primary: #0ea5e9;
+      --primary-glow: rgba(14, 165, 233, 0.3);
+      --success: #10b981;
+      --success-glow: rgba(16, 185, 129, 0.25);
+      --danger: #f43f5e;
+      --danger-glow: rgba(244, 63, 94, 0.25);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(14, 165, 233, 0.08) 0%, transparent 40%);
+      background-attachment: fixed;
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1.5rem;
+      overflow-x: hidden;
+    }
+
+    /* Lock Screen Style */
+    #lock-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background: var(--bg-dark);
+      background-image: radial-gradient(circle at center, rgba(14, 165, 233, 0.15) 0%, #070b13 70%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.4s;
+    }
+
+    .lock-card {
+      width: 100%;
+      max-width: 420px;
+      background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--border-color);
+      border-radius: 24px;
+      padding: 2.5rem;
+      box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.5);
+      text-align: center;
+      animation: scaleUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .lock-icon-wrapper {
+      width: 70px;
+      height: 70px;
+      background: rgba(14, 165, 233, 0.1);
+      border: 1px solid rgba(14, 165, 233, 0.2);
+      color: var(--primary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      margin: 0 auto 1.5rem;
+      box-shadow: 0 0 20px var(--primary-glow);
+    }
+
+    .lock-title {
+      font-size: 1.4rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(135deg, #f8fafc 30%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .lock-subtitle {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 2rem;
+    }
+
+    /* Form Inputs */
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      text-align: left;
+      margin-bottom: 1.25rem;
+      position: relative;
+    }
+
+    .input-group label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+    }
+
+    .input-wrapper {
+      position: relative;
+      width: 100%;
+    }
+
+    .input-wrapper i {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 1rem;
+      pointer-events: none;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="password"],
+    input[type="month"],
+    textarea,
+    select {
+      width: 100%;
+      padding: 0.9rem 1rem 0.9rem 2.7rem;
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      color: var(--text-main);
+      font-size: 0.95rem;
+      transition: all 0.2s;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: rgba(0, 0, 0, 0.4);
+      box-shadow: 0 0 0 3px var(--primary-glow);
+    }
+
+    .btn-submit {
+      width: 100%;
+      background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%);
+      color: white;
+      border: none;
+      padding: 1rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border-radius: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      box-shadow: 0 4px 14px 0 rgba(14, 165, 233, 0.3);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      margin-top: 1rem;
+    }
+
+    .btn-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px 0 rgba(14, 165, 233, 0.45);
+    }
+
+    .btn-submit:active {
+      transform: translateY(0);
+    }
+
+    .error-msg {
+      color: var(--danger);
+      font-size: 0.85rem;
+      margin-top: 0.75rem;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      animation: shake 0.4s ease;
+    }
+
+    /* Main App Layout */
+    #dashboard {
+      width: 100%;
+      max-width: 1100px;
+      display: none;
+      flex-direction: column;
+      gap: 1.5rem;
+      animation: fadeIn 0.5s ease forwards;
+    }
+
+    header {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 1.5rem;
+      background: var(--bg-card);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-weight: 800;
+      font-size: 1.3rem;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .logo i {
+      background: linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%);
+      -webkit-background-clip: initial;
+      -webkit-text-fill-color: initial;
+      color: #38bdf8;
+      font-size: 1.4rem;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .btn-logout {
+      background: rgba(244, 63, 94, 0.08);
+      color: #fb7185;
+      border: 1px solid rgba(244, 63, 94, 0.2);
+      padding: 0.5rem 1rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s;
+    }
+
+    .btn-logout:hover {
+      background: rgba(244, 63, 94, 0.15);
+      border-color: rgba(244, 63, 94, 0.3);
+    }
+
+    /* Dashboard Grid */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 1.5rem;
+    }
+
+    .panel {
+      background: var(--bg-card);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border-color);
+      border-radius: 24px;
+      padding: 2rem;
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .panel-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      padding-bottom: 0.75rem;
+    }
+
+    .panel-title i {
+      color: var(--primary);
+    }
+
+    /* Tab Switch */
+    .verdict-switch {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: rgba(0, 0, 0, 0.2);
+      padding: 0.3rem;
+      border-radius: 14px;
+      border: 1px solid var(--border-color);
+    }
+
+    .switch-btn {
+      padding: 0.8rem;
+      font-size: 0.9rem;
+      font-weight: 700;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      background: transparent;
+      color: var(--text-muted);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: none;
+    }
+
+    .switch-btn:hover {
+      color: var(--text-main);
+      transform: none;
+      box-shadow: none;
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .switch-btn.active-authentic {
+      background: var(--success);
+      color: var(--bg-dark);
+      box-shadow: 0 4px 12px var(--success-glow);
+    }
+
+    .switch-btn.active-counterfeit {
+      background: var(--danger);
+      color: var(--text-main);
+      box-shadow: 0 4px 12px var(--danger-glow);
+    }
+
+    /* Form Fields Grid */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .span-2 {
+      grid-column: span 2;
+    }
+
+    /* Tag Manager UI */
+    .tags-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+      padding: 0.5rem;
+      background: rgba(0, 0, 0, 0.15);
+      border: 1px dashed var(--border-color);
+      border-radius: 12px;
+      min-height: 48px;
+    }
+
+    .tag-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.3rem 0.7rem;
+      background: rgba(14, 165, 233, 0.12);
+      border: 1px solid rgba(14, 165, 233, 0.25);
+      color: #38bdf8;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+
+    .tag-item.tag-danger {
+      background: rgba(244, 63, 94, 0.12);
+      border: 1px solid rgba(244, 63, 94, 0.25);
+      color: #fb7185;
+    }
+
+    .tag-item i {
+      cursor: pointer;
+      font-size: 0.75rem;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+    }
+
+    .tag-item i:hover {
+      opacity: 1;
+      color: var(--text-main);
+    }
+
+    .tags-input-wrapper {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .tags-input-wrapper input {
+      flex: 1;
+    }
+
+    .btn-add-tag {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 0 1.2rem;
+      border-radius: 14px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
+      box-shadow: none;
+    }
+
+    .btn-add-tag:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: none;
+      box-shadow: none;
+    }
+
+    /* Live Preview & Active Decision Card */
+    .preview-column {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    /* Small Mock Phone Frame for Live Preview */
+    .phone-mockup {
+      width: 100%;
+      border: 6px solid #1e293b;
+      border-radius: 36px;
+      padding: 1.25rem;
+      background: #070b13;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+      position: relative;
+    }
+
+    .phone-mockup::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100px;
+      height: 18px;
+      background: #1e293b;
+      border-bottom-left-radius: 10px;
+      border-bottom-right-radius: 10px;
+      z-index: 10;
+    }
+
+    .phone-content {
+      border-radius: 24px;
+      max-height: 500px;
+      overflow-y: auto;
+      padding: 0.5rem;
+      /* Styling custom scrollbar */
+    }
+
+    .phone-content::-webkit-scrollbar {
+      width: 4px;
+    }
+    .phone-content::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+    }
+
+    /* Mimic User styles on Preview */
+    .pv-verdict-banner {
+      border-radius: 16px;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      text-align: center;
+      border: 1px solid transparent;
+      margin-bottom: 1rem;
+    }
+
+    .pv-verdict-authentic {
+      background: rgba(16, 185, 129, 0.05);
+      border-color: rgba(16, 185, 129, 0.15);
+    }
+    .pv-verdict-counterfeit {
+      background: rgba(244, 63, 94, 0.05);
+      border-color: rgba(244, 63, 94, 0.15);
+    }
+
+    .pv-badge-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+    }
+    .pv-verdict-authentic .pv-badge-icon {
+      background: var(--success);
+      color: var(--bg-dark);
+      box-shadow: 0 0 12px var(--success-glow);
+    }
+    .pv-verdict-counterfeit .pv-badge-icon {
+      background: var(--danger);
+      color: var(--text-main);
+      box-shadow: 0 0 12px var(--danger-glow);
+    }
+
+    .pv-badge-title {
+      font-size: 1rem;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+    }
+    .pv-verdict-authentic .pv-badge-title { color: #34d399; }
+    .pv-verdict-counterfeit .pv-badge-title { color: #fb7185; }
+
+    .pv-score-container {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.2rem 0.6rem;
+      border-radius: 100px;
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .pv-message-card {
+      background: rgba(255, 255, 255, 0.03);
+      border-left: 3px solid var(--primary);
+      border-radius: 4px 12px 12px 4px;
+      padding: 0.9rem;
+      font-size: 0.8rem;
+      line-height: 1.4;
+      margin-bottom: 1rem;
+    }
+    .pv-verdict-authentic .pv-message-card { border-left-color: var(--success); }
+    .pv-verdict-counterfeit .pv-message-card { border-left-color: var(--danger); }
+
+    .pv-info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .pv-info-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      border-radius: 12px;
+      padding: 0.75rem;
+    }
+
+    .pv-info-label {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 0.15rem;
+    }
+
+    .pv-info-value {
+      font-weight: 600;
+      font-size: 0.8rem;
+    }
+
+    .pv-markers-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+    }
+
+    .pv-marker-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0.75rem;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      border-radius: 8px;
+      font-size: 0.75rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .pv-marker-item i.fa-circle-check { color: var(--success); }
+    .pv-marker-item i.fa-circle-xmark { color: var(--danger); }
+
+    /* Saved Config Status Header */
+    .status-panel {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      border-radius: 16px;
+      padding: 1rem 1.25rem;
+      font-size: 0.85rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Toast styling */
+    #toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid var(--success);
+      color: var(--text-main);
+      padding: 1rem 1.5rem;
+      border-radius: 12px;
+      display: none;
+      align-items: center;
+      gap: 0.75rem;
+      box-shadow: 0 8px 32px rgba(16, 185, 129, 0.2);
+      z-index: 1001;
+      animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    #toast i {
+      color: var(--success);
+      font-size: 1.2rem;
+    }
+
+    /* Keyframes */
+    @keyframes scaleUp {
+      from { transform: scale(0.95); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes slideInRight {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-6px); }
+      40%, 80% { transform: translateX(6px); }
+    }
+
+    @media (max-width: 900px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+      body {
+        padding: 1rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+      .span-2 {
+        grid-column: span 1;
+      }
+      .panel {
+        padding: 1.5rem 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Screen 1: Lock Screen -->
+  <div id="lock-screen">
+    <div class="lock-card">
+      <div class="lock-icon-wrapper">
+        <i class="fa-solid fa-user-shield"></i>
+      </div>
+      <h2 class="lock-title">Administration</h2>
+      <p class="lock-subtitle">Entrez la clé de sécurité pour modifier la base PharmaScan</p>
+      
+      <form onsubmit="handleLogin(event)">
+        <div class="input-group">
+          <label for="admin-password">Mot de Passe</label>
+          <div class="input-wrapper">
+            <i class="fa-solid fa-key"></i>
+            <input type="password" id="admin-password" placeholder="Clé d'administration" required>
+          </div>
+        </div>
+        <button type="submit" class="btn-submit">
+          <i class="fa-solid fa-lock-open"></i> Déverrouiller le Panneau
+        </button>
+      </form>
+      <div id="login-error" class="error-msg">
+        <i class="fa-solid fa-circle-exclamation"></i> Clé incorrecte. Veuillez réessayer.
+      </div>
+    </div>
+  </div>
+
+  <!-- Screen 2: Admin Dashboard -->
+  <div id="dashboard">
+    <header>
+      <div class="logo">
+        <i class="fa-solid fa-microscope"></i>
+        <span>PharmaScan Admin</span>
+      </div>
+      <div class="header-actions">
+        <div style="font-size: 0.8rem; font-weight: 500; color: var(--text-muted); background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); padding: 0.4rem 0.8rem; border-radius: 100px;">
+          Session active : <strong style="color: var(--primary);">Administrateur</strong>
+        </div>
+        <button class="btn-logout" onclick="handleLogout()">
+          <i class="fa-solid fa-right-from-bracket"></i> Quitter
+        </button>
+      </div>
+    </header>
+
+    <div class="dashboard-grid">
+      
+      <!-- Left Column: Settings Form -->
+      <div class="panel">
+        <div class="panel-title">
+          <i class="fa-solid fa-sliders"></i>
+          <span>Configuration de la décision</span>
+        </div>
+
+        <!-- Verdict Toggle -->
+        <div class="input-group">
+          <label>Diagnostic du produit</label>
+          <div class="verdict-switch">
+            <button type="button" id="btn-verdict-auth" class="switch-btn" onclick="setVerdict(true)">
+              <i class="fa-solid fa-circle-check"></i> Authentique
+            </button>
+            <button type="button" id="btn-verdict-fake" class="switch-btn" onclick="setVerdict(false)">
+              <i class="fa-solid fa-circle-xmark"></i> Contrefait / Faux
+            </button>
+          </div>
+        </div>
+
+        <!-- Form fields container -->
+        <form id="decision-form" onsubmit="saveDecision(event)" class="form-grid">
+          
+          <div class="input-group span-2">
+            <label for="drug-name">Nom du Médicament</label>
+            <div class="input-wrapper">
+              <i class="fa-solid fa-prescription-bottle-medical"></i>
+              <input type="text" id="drug-name" placeholder="ex: Doliprane 1000 mg (Comprimés)" required oninput="syncPreview()">
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label for="drug-lot">Numéro de Lot</label>
+            <div class="input-wrapper">
+              <i class="fa-solid fa-barcode"></i>
+              <input type="text" id="drug-lot" placeholder="ex: 23B12" required oninput="syncPreview()">
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label for="drug-maker">Fabricant</label>
+            <div class="input-wrapper">
+              <i class="fa-solid fa-industry"></i>
+              <input type="text" id="drug-maker" placeholder="ex: Sanofi Aventis France" required oninput="syncPreview()">
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label for="drug-exp">Date d'Expiration</label>
+            <div class="input-wrapper">
+              <i class="fa-solid fa-calendar-xmark"></i>
+              <input type="month" id="drug-exp" required onchange="syncPreview()">
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label for="drug-country">Pays d'Origine</label>
+            <div class="input-wrapper">
+              <i class="fa-solid fa-earth-europe"></i>
+              <input type="text" id="drug-country" placeholder="ex: France" required oninput="syncPreview()">
+            </div>
+          </div>
+
+          <div class="input-group span-2">
+            <label for="drug-score">Indice de Confiance IA (%)</label>
+            <div class="input-wrapper">
+              <i class="fa-solid fa-gauge-high"></i>
+              <input type="number" id="drug-score" placeholder="ex: 99.8" min="0" max="100" step="0.1" required oninput="syncPreview()">
+            </div>
+          </div>
+
+          <div class="input-group span-2">
+            <label for="drug-message">Message de diagnostic</label>
+            <div class="input-wrapper">
+              <i class="fa-solid fa-message-medical" style="top: 1.2rem; transform: none;"></i>
+              <textarea id="drug-message" rows="3" placeholder="Saisir les détails de l'analyse..." required oninput="syncPreview()" style="padding-left: 2.7rem; resize: vertical;"></textarea>
+            </div>
+          </div>
+
+          <!-- Tags marker section -->
+          <div class="input-group span-2">
+            <label>Marqueurs de sécurité analysés</label>
+            <div class="tags-input-wrapper">
+              <div class="input-wrapper" style="flex: 1;">
+                <i class="fa-solid fa-microchip"></i>
+                <input type="text" id="marker-input" placeholder="Ajouter un marqueur de contrôle..." onkeydown="handleTagKeydown(event)">
+              </div>
+              <button type="button" class="btn-add-tag" onclick="addMarkerTag()">
+                Ajouter
+              </button>
+            </div>
+            <div id="markers-tags" class="tags-container">
+              <!-- Tags populated dynamically -->
+            </div>
+          </div>
+
+          <button type="submit" class="btn-submit span-2" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); box-shadow: 0 4px 14px 0 rgba(16, 185, 129, 0.3);">
+            <i class="fa-solid fa-circle-check"></i> Appliquer la Décision
+          </button>
+        </form>
+      </div>
+
+      <!-- Right Column: Status & Live Preview -->
+      <div class="preview-column">
+        
+        <!-- Status Panel -->
+        <div class="status-panel">
+          <div>
+            <span style="color: var(--text-muted); font-size: 0.75rem; display: block; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">Statut Actuel</span>
+            <span style="font-weight: 600;" id="active-decision-summary">Doliprane (Authentique) par défaut</span>
+          </div>
+          <span style="font-size: 0.75rem; background: rgba(14, 165, 233, 0.1); color: var(--primary); padding: 0.3rem 0.6rem; border-radius: 8px; border: 1px solid rgba(14, 165, 233, 0.15); font-weight: 600;">
+            En Ligne
+          </span>
+        </div>
+
+        <!-- Live Preview Phone Frame -->
+        <div class="panel" style="gap: 1rem;">
+          <div class="panel-title" style="border-bottom: none; padding-bottom: 0;">
+            <i class="fa-solid fa-mobile-screen-button"></i>
+            <span>Prévisualisation Mobile (User Interface)</span>
+          </div>
+          
+          <div class="phone-mockup">
+            <div class="phone-content" id="pv-container">
+              
+              <!-- Mock Result banner in phone -->
+              <div id="pv-banner" class="pv-verdict-banner">
+                <div class="pv-badge-icon">
+                  <i id="pv-icon" class="fa-solid"></i>
+                </div>
+                <h2 id="pv-title" class="pv-badge-title"></h2>
+                <div class="pv-score-container">
+                  <i class="fa-solid fa-shield-halved"></i>
+                  <span>Confiance : <span id="pv-score"></span>%</span>
+                </div>
+              </div>
+
+              <!-- Mock Message -->
+              <div id="pv-msg" class="pv-message-card"></div>
+
+              <!-- Mock Info Grid -->
+              <div class="pv-info-grid">
+                <div class="pv-info-card">
+                  <div class="pv-info-label">Médicament</div>
+                  <div id="pv-prod-name" class="pv-info-value"></div>
+                </div>
+                <div class="pv-info-card">
+                  <div class="pv-info-label">Lot</div>
+                  <div id="pv-prod-lot" class="pv-info-value"></div>
+                </div>
+                <div class="pv-info-card">
+                  <div class="pv-info-label">Fabricant</div>
+                  <div id="pv-prod-maker" class="pv-info-value"></div>
+                </div>
+                <div class="pv-info-card">
+                  <div class="pv-info-label">Expiration</div>
+                  <div id="pv-prod-exp" class="pv-info-value"></div>
+                </div>
+              </div>
+
+              <!-- Mock Markers -->
+              <div>
+                <h4 class="pv-markers-title">Analyse des marqueurs</h4>
+                <div id="pv-markers-list">
+                  <!-- Markers dynamically created -->
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Toast Saved Confirmation -->
+  <div id="toast">
+    <i class="fa-solid fa-circle-check"></i>
+    <span>Décision active mise à jour avec succès !</span>
+  </div>
+
+  <script>
+    // State management
+    let currentVerdict = true; // true = authentic, false = counterfeit
+    let markerList = [];
+    
+    // Default values to pre-populate Faux and Authentique presets
+    const PRESET_AUTHENTIC = {
+      nom: "Doliprane 1000 mg (Comprimés)",
+      lot: "23B12",
+      fabricant: "Sanofi Aventis France",
+      exp: "2028-12",
+      pays: "France",
+      score: 99.8,
+      message: "Ce produit a été certifié authentique. Les codes d'emballage, le profil spectroscopique moléculaire ainsi que le numéro de lot correspondent parfaitement aux données du fabricant.",
+      marqueurs: [
+        "Marqueur d'encre réactif UV présent",
+        "Micro-gravure laser active sur le blister",
+        "Formulation chimique conforme par spectroscopie",
+        "Code QR unique enregistré dans la blockchain"
+      ]
+    };
+
+    const PRESET_COUNTERFEIT = {
+      nom: "Doliprane 1000 mg (Falsifié)",
+      lot: "23B12",
+      fabricant: "Inconnu / Contrefaçon suspectée",
+      exp: "2028-12",
+      pays: "Provenance inconnue",
+      score: 14.5,
+      message: "ALERTE MAJEURE : Les marqueurs de sécurité ne correspondent pas aux étalons d'origine de Sanofi Aventis. Risques graves d'inefficacité ou de présence d'impuretés toxiques. Ne pas consommer.",
+      marqueurs: [
+        "⚠️ Absence du marqueur d'encre réactif UV",
+        "⚠️ Anomalie d'alignement de la gravure laser",
+        "⚠️ Incohérence spectrographique moléculaire",
+        "⚠️ Numéro de lot non répertorié en blockchain"
+      ]
+    };
+
+    // Authenticate Logic
+    window.addEventListener('load', () => {
+      // Check if logged in this session
+      const auth = sessionStorage.getItem('admin_auth');
+      if (auth === 'true') {
+        unlockDashboard();
+      }
+      
+      // Load stored decision or set preset authentic
+      loadFormFromStorage();
+    });
+
+    function handleLogin(event) {
+      event.preventDefault();
+      const pwInput = document.getElementById('admin-password');
+      const errorDiv = document.getElementById('login-error');
+
+      if (pwInput.value === 'admin') {
+        sessionStorage.setItem('admin_auth', 'true');
+        errorDiv.style.display = 'none';
+        unlockDashboard();
+      } else {
+        errorDiv.style.display = 'flex';
+        pwInput.value = '';
+        pwInput.focus();
+        
+        // Retrigger shake animation
+        errorDiv.style.animation = 'none';
+        errorDiv.offsetHeight; // Trigger reflow
+        errorDiv.style.animation = null;
+      }
+    }
+
+    function unlockDashboard() {
+      document.getElementById('lock-screen').style.opacity = '0';
+      setTimeout(() => {
+        document.getElementById('lock-screen').style.display = 'none';
+        document.getElementById('dashboard').style.display = 'flex';
+      }, 400);
+    }
+
+    function handleLogout() {
+      sessionStorage.removeItem('admin_auth');
+      document.getElementById('lock-screen').style.display = 'flex';
+      document.getElementById('lock-screen').style.opacity = '1';
+      document.getElementById('dashboard').style.display = 'none';
+      document.getElementById('admin-password').value = '';
+    }
+
+    // Form logic
+    function setVerdict(isAuthentic) {
+      currentVerdict = isAuthentic;
+      
+      const authBtn = document.getElementById('btn-verdict-auth');
+      const fakeBtn = document.getElementById('btn-verdict-fake');
+      
+      if (isAuthentic) {
+        authBtn.className = 'switch-btn active-authentic';
+        fakeBtn.className = 'switch-btn';
+        populateFormFields(PRESET_AUTHENTIC);
+      } else {
+        authBtn.className = 'switch-btn';
+        fakeBtn.className = 'switch-btn active-counterfeit';
+        populateFormFields(PRESET_COUNTERFEIT);
+      }
+      syncPreview();
+    }
+
+    function populateFormFields(data) {
+      document.getElementById('drug-name').value = data.nom || '';
+      document.getElementById('drug-lot').value = data.lot || '';
+      document.getElementById('drug-maker').value = data.fabricant || '';
+      document.getElementById('drug-exp').value = data.exp || '';
+      document.getElementById('drug-country').value = data.pays || '';
+      document.getElementById('drug-score').value = data.score || '';
+      document.getElementById('drug-message').value = data.message || '';
+      
+      markerList = [...(data.marqueurs || [])];
+      renderMarkerTags();
+    }
+
+    function loadFormFromStorage() {
+      try {
+        const stored = localStorage.getItem('admin_decision');
+        if (stored) {
+          const decision = JSON.parse(stored);
+          currentVerdict = decision.verdict === true || decision.verdict === 'true';
+          
+          // Style verdict toggle
+          const authBtn = document.getElementById('btn-verdict-auth');
+          const fakeBtn = document.getElementById('btn-verdict-fake');
+          if (currentVerdict) {
+            authBtn.className = 'switch-btn active-authentic';
+            fakeBtn.className = 'switch-btn';
+          } else {
+            authBtn.className = 'switch-btn';
+            fakeBtn.className = 'switch-btn active-counterfeit';
+          }
+          
+          populateFormFields(decision);
+          updateSavedSummary(decision);
+        } else {
+          // default setup
+          setVerdict(true);
+        }
+      } catch (e) {
+        console.error("Erreur de lecture du localStorage, initialisation par défaut", e);
+        setVerdict(true);
+      }
+    }
+
+    // Dynamic marker tags management
+    function renderMarkerTags() {
+      const tagsContainer = document.getElementById('markers-tags');
+      tagsContainer.innerHTML = '';
+      
+      markerList.forEach((marker, index) => {
+        const span = document.createElement('span');
+        span.className = 'tag-item';
+        if (!currentVerdict) {
+          span.classList.add('tag-danger');
+        }
+        
+        span.innerHTML = `
+          <span>${marker}</span>
+          <i class="fa-solid fa-circle-xmark" onclick="removeMarkerTag(${index})"></i>
+        `;
+        tagsContainer.appendChild(span);
+      });
+    }
+
+    function handleTagKeydown(event) {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        addMarkerTag();
+      }
+    }
+
+    function addMarkerTag() {
+      const input = document.getElementById('marker-input');
+      const value = input.value.trim();
+      if (value) {
+        markerList.push(value);
+        input.value = '';
+        renderMarkerTags();
+        syncPreview();
+      }
+    }
+
+    function removeMarkerTag(index) {
+      markerList.splice(index, 1);
+      renderMarkerTags();
+      syncPreview();
+    }
+
+    // Sync form values to mobile layout preview card
+    function syncPreview() {
+      // Elements
+      const pvBanner = document.getElementById('pv-banner');
+      const pvIcon = document.getElementById('pv-icon');
+      const pvTitle = document.getElementById('pv-title');
+      const pvScore = document.getElementById('pv-score');
+      const pvMsg = document.getElementById('pv-msg');
+      
+      const pProdName = document.getElementById('pv-prod-name');
+      const pProdLot = document.getElementById('pv-prod-lot');
+      const pProdMaker = document.getElementById('pv-prod-maker');
+      const pProdExp = document.getElementById('pv-prod-exp');
+      
+      const pvMarkers = document.getElementById('pv-markers-list');
+
+      // Sync verdict styles
+      pvBanner.className = 'pv-verdict-banner';
+      if (currentVerdict) {
+        pvBanner.classList.add('pv-verdict-authentic');
+        pvIcon.className = 'fa-solid fa-shield-check';
+        pvTitle.textContent = 'PRODUIT AUTHENTIQUE';
+      } else {
+        pvBanner.classList.add('pv-verdict-counterfeit');
+        pvIcon.className = 'fa-solid fa-triangle-exclamation';
+        pvTitle.textContent = 'ALERTE CONTREFAÇON';
+      }
+
+      // Values sync
+      pvScore.textContent = document.getElementById('drug-score').value || '0';
+      pvMsg.textContent = document.getElementById('drug-message').value || 'Aucun message de diagnostic spécifié.';
+      
+      pProdName.textContent = document.getElementById('drug-name').value || '--';
+      pProdLot.textContent = document.getElementById('drug-lot').value || '--';
+      pProdMaker.textContent = document.getElementById('drug-maker').value || '--';
+      
+      // Exp date formatting
+      const expVal = document.getElementById('drug-exp').value;
+      if (expVal) {
+        const parts = expVal.split('-');
+        pProdExp.textContent = parts.length === 2 ? `${parts[1]}/${parts[0]}` : expVal;
+      } else {
+        pProdExp.textContent = '--';
+      }
+
+      // Sync Markers
+      pvMarkers.innerHTML = '';
+      if (markerList.length === 0) {
+        const div = document.createElement('div');
+        div.className = 'pv-marker-item';
+        div.style.color = 'var(--text-muted)';
+        div.innerHTML = `<i class="fa-solid fa-circle-info"></i> <span>Aucun marqueur configuré</span>`;
+        pvMarkers.appendChild(div);
+      } else {
+        markerList.forEach(m => {
+          const div = document.createElement('div');
+          div.className = 'pv-marker-item';
+          const iconClass = currentVerdict ? 'fa-solid fa-circle-check' : 'fa-solid fa-circle-xmark';
+          div.innerHTML = `<i class="${iconClass}"></i> <span>${m}</span>`;
+          pvMarkers.appendChild(div);
+        });
+      }
+    }
+
+    // Save decision to localStorage
+    function saveDecision(event) {
+      event.preventDefault();
+
+      const decision = {
+        verdict: currentVerdict,
+        nom: document.getElementById('drug-name').value.trim(),
+        lot: document.getElementById('drug-lot').value.trim(),
+        fabricant: document.getElementById('drug-maker').value.trim(),
+        exp: document.getElementById('drug-exp').value,
+        pays: document.getElementById('drug-country').value.trim(),
+        score: parseFloat(document.getElementById('drug-score').value) || 0,
+        message: document.getElementById('drug-message').value.trim(),
+        marqueurs: markerList
+      };
+
+      try {
+        localStorage.setItem('admin_decision', JSON.stringify(decision));
+        
+        // Show Success Toast
+        showToast();
+        
+        // Update summary text
+        updateSavedSummary(decision);
+      } catch (err) {
+        console.error("Échec de la sauvegarde locale :", err);
+        alert("Erreur lors de la sauvegarde locale. Vérifiez l'espace de stockage.");
+      }
+    }
+
+    function updateSavedSummary(decision) {
+      const summarySpan = document.getElementById('active-decision-summary');
+      const isAuth = decision.verdict === true || decision.verdict === 'true';
+      const typeText = isAuth ? 'Authentique' : 'Contrefait';
+      const color = isAuth ? 'var(--success)' : 'var(--danger)';
+      summarySpan.innerHTML = `${decision.nom} (<span style="color: ${color}; font-weight: 700;">${typeText}</span>) - Lot ${decision.lot}`;
+    }
+
+    function showToast() {
+      const toast = document.getElementById('toast');
+      toast.style.display = 'flex';
+      setTimeout(() => {
+        toast.style.display = 'none';
+      }, 3000);
+    }
+  </script>
+</body>
+</html>

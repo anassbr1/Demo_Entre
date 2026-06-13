@@ -1,0 +1,2136 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PharmaScan AI - Espace Client</title>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- FontAwesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    :root {
+      --bg-light: #eef5fb;
+      --bg-header: #0c395e;
+      --bg-card: #ffffff;
+      --border-color: rgba(12, 57, 94, 0.08);
+      --primary: #0ea5e9;
+      --primary-dark: #0c395e;
+      --success: #059669;
+      --success-bg: #d1fae5;
+      --danger: #ef4444;
+      --danger-bg: #fee2e2;
+      --warning: #f97316;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-light);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding-bottom: 70px; /* Space for bottom navigation */
+      overflow-x: hidden;
+    }
+
+    /* Common Header Banner */
+    .header-banner {
+      background-color: var(--bg-header);
+      color: white;
+      padding: 1.5rem;
+      border-bottom-left-radius: 12px;
+      border-bottom-right-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .header-banner h1 {
+      font-size: 1.35rem;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+
+    .header-banner p {
+      font-size: 0.8rem;
+      opacity: 0.8;
+    }
+
+    main {
+      flex: 1;
+      width: 100%;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    /* Auth / Login Container */
+    #login-screen {
+      position: fixed;
+      inset: 0;
+      background-color: var(--bg-light);
+      z-index: 2000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .login-card {
+      width: 100%;
+      max-width: 400px;
+      background: var(--bg-card);
+      border-radius: 24px;
+      padding: 2.25rem;
+      box-shadow: 0 10px 30px rgba(12, 57, 94, 0.06);
+      border: 1px solid var(--border-color);
+      text-align: center;
+    }
+
+    .login-icon {
+      width: 64px;
+      height: 64px;
+      background: rgba(14, 165, 233, 0.08);
+      color: var(--primary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      margin: 0 auto 1.25rem;
+    }
+
+    .login-card h2 {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: var(--primary-dark);
+      margin-bottom: 0.5rem;
+    }
+
+    .login-card p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 1.75rem;
+    }
+
+    .login-btn {
+      width: 100%;
+      background: var(--bg-card);
+      border: 1px solid rgba(12, 57, 94, 0.12);
+      padding: 1rem;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-bottom: 0.75rem;
+    }
+
+    .login-btn:hover {
+      background: #f8fafc;
+      border-color: var(--primary);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(12, 57, 94, 0.04);
+    }
+
+    .login-btn-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: white;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+    }
+
+    .login-btn-info {
+      flex: 1;
+    }
+
+    .login-btn-name {
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: var(--text-main);
+    }
+
+    .login-btn-role {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    /* Tab Layout Views */
+    .tab-view {
+      display: none;
+      flex-direction: column;
+      gap: 1.25rem;
+      animation: fadeIn 0.35s ease forwards;
+    }
+
+    .tab-view.active {
+      display: flex;
+    }
+
+    /* Cards Styles */
+    .card {
+      background: var(--bg-card);
+      border-radius: 20px;
+      border: 1px solid var(--border-color);
+      padding: 1.25rem;
+      box-shadow: 0 4px 15px rgba(12, 57, 94, 0.02);
+    }
+
+    /* Scanner View Custom Styles */
+    .scanner-viewport {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 4/3;
+      background: #000;
+      border-radius: 16px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #video, #canvas {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: none;
+    }
+
+    #canvas {
+      display: block;
+      z-index: 1;
+    }
+
+    .laser-line {
+      position: absolute;
+      left: 10px;
+      right: 10px;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, #0ea5e9, transparent);
+      box-shadow: 0 0 10px #0ea5e9;
+      z-index: 3;
+      top: 0;
+      animation: laserSweep 3s ease-in-out infinite;
+      display: none;
+    }
+
+    .hud-corners {
+      position: absolute;
+      inset: 15px;
+      border: 2px solid transparent;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .hud-corners::before, .hud-corners::after,
+    .hud-corners-inner::before, .hud-corners-inner::after {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      border-color: var(--primary);
+      border-style: solid;
+    }
+    .hud-corners::before { top: 0; left: 0; border-width: 3px 0 0 3px; border-top-left-radius: 8px; }
+    .hud-corners::after { top: 0; right: 0; border-width: 3px 3px 0 0; border-top-right-radius: 8px; }
+    .hud-corners-inner::before { bottom: 0; left: 0; border-width: 0 0 3px 3px; border-bottom-left-radius: 8px; }
+    .hud-corners-inner::after { bottom: 0; right: 0; border-width: 0 3px 3px 0; border-bottom-right-radius: 8px; }
+
+    .placeholder-scanner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+      color: #94a3b8;
+      text-align: center;
+      padding: 1.5rem;
+      z-index: 2;
+    }
+
+    .placeholder-scanner i {
+      font-size: 3rem;
+      color: rgba(14, 165, 233, 0.3);
+    }
+
+    .action-buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+
+    button {
+      background: var(--primary-dark);
+      color: white;
+      border: none;
+      padding: 0.9rem 1.25rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      border-radius: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: all 0.2s;
+    }
+
+    button:hover {
+      background: #0ea5e9;
+      transform: translateY(-1px);
+    }
+
+    .btn-outline {
+      background: var(--bg-card);
+      color: var(--text-main);
+      border: 1px solid rgba(12, 57, 94, 0.12);
+    }
+
+    .btn-outline:hover {
+      background: #f8fafc;
+      border-color: rgba(12, 57, 94, 0.2);
+    }
+
+    /* Loader / Analysis view */
+    .analysis-viewport {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2.5rem 1rem;
+      text-align: center;
+      gap: 1.5rem;
+    }
+
+    .double-ring {
+      position: relative;
+      width: 80px;
+      height: 80px;
+    }
+
+    .ring-outer {
+      position: absolute;
+      inset: 0;
+      border: 4px solid rgba(14, 165, 233, 0.1);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    .ring-inner {
+      position: absolute;
+      inset: 10px;
+      border: 3px solid rgba(12, 57, 94, 0.08);
+      border-bottom-color: var(--primary-dark);
+      border-radius: 50%;
+      animation: spinBack 1.5s linear infinite;
+    }
+
+    .double-ring i {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 1.4rem;
+      color: var(--primary-dark);
+    }
+
+    .step-text-holder {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      min-height: 20px;
+    }
+
+    /* Results layout */
+    .result-view {
+      display: none;
+      flex-direction: column;
+      gap: 1.25rem;
+      animation: scaleUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .banner-result {
+      border-radius: 16px;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 0.5rem;
+      border: 1px solid transparent;
+    }
+
+    .banner-auth {
+      background: var(--success-bg);
+      border-color: rgba(5, 150, 105, 0.15);
+    }
+
+    .banner-fake {
+      background: var(--danger-bg);
+      border-color: rgba(239, 68, 68, 0.15);
+    }
+
+    .banner-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+    }
+    .banner-auth .banner-icon { background: var(--success); color: white; }
+    .banner-fake .banner-icon { background: var(--danger); color: white; }
+
+    .banner-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: -0.2px;
+    }
+    .banner-auth .banner-title { color: var(--success); }
+    .banner-fake .banner-title { color: var(--danger); }
+
+    .banner-score {
+      font-size: 0.8rem;
+      font-weight: 600;
+      background: rgba(255, 255, 255, 0.6);
+      padding: 0.2rem 0.6rem;
+      border-radius: 100px;
+    }
+
+    .msg-box {
+      border-left: 4px solid var(--primary-dark);
+      background: #f8fafc;
+      padding: 1rem;
+      font-size: 0.85rem;
+      line-height: 1.45;
+      border-radius: 4px 12px 12px 4px;
+    }
+    .banner-auth + .msg-box { border-left-color: var(--success); }
+    .banner-fake + .msg-box { border-left-color: var(--danger); }
+
+    .grid-info {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+
+    .info-box {
+      background: #f8fafc;
+      border: 1px solid rgba(0,0,0,0.02);
+      border-radius: 12px;
+      padding: 0.75rem 1rem;
+    }
+
+    .info-lbl {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 0.15rem;
+      font-weight: 700;
+    }
+
+    .info-val {
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+
+    .marker-li {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.6rem 0.75rem;
+      border-radius: 8px;
+      background: #f8fafc;
+      font-size: 0.8rem;
+      margin-bottom: 0.4rem;
+    }
+    .marker-li i.fa-circle-check { color: var(--success); }
+    .marker-li i.fa-circle-xmark { color: var(--danger); }
+
+    /* Scan History View Styles */
+    .history-count-header {
+      background-color: var(--bg-header);
+      color: white;
+      padding: 1.5rem;
+      border-bottom-left-radius: 12px;
+      border-bottom-right-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .history-card {
+      background: var(--bg-card);
+      border-radius: 16px;
+      padding: 1rem;
+      border: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(12, 57, 94, 0.01);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .history-card:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(12, 57, 94, 0.04);
+    }
+
+    .history-icon-circle {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+    .history-icon-auth { background: var(--success-bg); color: var(--success); }
+    .history-icon-fake { background: var(--danger-bg); color: var(--danger); }
+
+    .history-details {
+      flex: 1;
+    }
+
+    .history-title {
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: var(--text-main);
+      margin-bottom: 0.15rem;
+    }
+
+    .history-time {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .history-badge {
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 0.2rem 0.5rem;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      margin-right: 0.5rem;
+    }
+    .history-badge-auth { background: var(--success-bg); color: var(--success); border-color: rgba(5, 150, 105, 0.1); }
+    .history-badge-fake { background: var(--danger-bg); color: var(--danger); border-color: rgba(239, 68, 68, 0.1); }
+
+    .btn-delete-history {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--danger-bg);
+      color: var(--danger);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+
+    .btn-delete-history:hover {
+      background: var(--danger);
+      color: white;
+    }
+
+    .history-empty {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: var(--text-muted);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .history-empty i {
+      font-size: 2.5rem;
+      color: rgba(12, 57, 94, 0.1);
+    }
+
+    /* Profile View Styles */
+    .profile-header-banner {
+      background-color: var(--bg-header);
+      color: white;
+      padding: 1.5rem;
+      border-bottom-left-radius: 12px;
+      border-bottom-right-radius: 12px;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .profile-avatar-circle {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: #3498db;
+      color: white;
+      font-weight: 700;
+      font-size: 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .profile-user-info {
+      flex: 1;
+    }
+
+    .profile-user-name {
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    .profile-user-email {
+      font-size: 0.75rem;
+      opacity: 0.8;
+      margin-bottom: 0.25rem;
+    }
+
+    .verified-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      font-size: 0.65rem;
+      background: rgba(255, 255, 255, 0.12);
+      padding: 0.15rem 0.5rem;
+      border-radius: 100px;
+      font-weight: 500;
+    }
+
+    /* Profile Stats Cards */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
+    }
+
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 1rem 0.5rem;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(12, 57, 94, 0.01);
+    }
+
+    .stat-number {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: var(--primary-dark);
+      margin-bottom: 0.15rem;
+    }
+    .stat-number.alert { color: var(--danger); }
+    .stat-number.auth { color: var(--success); }
+
+    .stat-lbl {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .last-activity-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+
+    .activity-summary-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 0.8rem;
+    }
+
+    .activity-summary-lbl {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      margin-bottom: 0.15rem;
+    }
+
+    .activity-summary-time {
+      font-weight: 700;
+      font-size: 0.8rem;
+    }
+    .activity-summary-time.alert { color: var(--danger); }
+
+    /* Chart Activity Card */
+    .activity-chart-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--primary-dark);
+      margin-bottom: 0.75rem;
+      letter-spacing: 0.5px;
+    }
+
+    .bar-chart-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      height: 70px;
+      padding: 0.5rem 0.25rem 0;
+      margin-bottom: 0.25rem;
+    }
+
+    .chart-bar-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: calc(100% / 7);
+      height: 100%;
+      justify-content: flex-end;
+      gap: 0.4rem;
+    }
+
+    .bar-pill {
+      width: 80%;
+      max-width: 30px;
+      background-color: var(--primary);
+      border-radius: 4px;
+      transition: height 0.5s ease;
+      min-height: 2px; /* Representing 0 flat line */
+    }
+
+    .bar-pill.flat {
+      background-color: rgba(14, 165, 233, 0.15);
+      height: 2px;
+    }
+
+    .chart-day-label {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      font-weight: 700;
+    }
+
+    /* Menu item buttons */
+    .profile-menu {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .menu-item-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      padding: 0.95rem 1.25rem;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      color: var(--text-main);
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .menu-item-btn:hover {
+      background: #f8fafc;
+      border-color: rgba(12, 57, 94, 0.2);
+    }
+
+    .menu-item-btn-left {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .menu-item-btn-left i {
+      color: var(--primary-dark);
+      font-size: 1.05rem;
+      width: 18px;
+    }
+
+    .menu-item-btn-right {
+      color: var(--text-muted);
+      font-size: 0.8rem;
+    }
+
+    .btn-warning-report {
+      background: var(--warning);
+      color: white;
+      border: none;
+      font-size: 0.85rem;
+      font-weight: 700;
+      padding: 1rem;
+      border-radius: 14px;
+      width: 100%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      box-shadow: 0 4px 12px rgba(249, 115, 22, 0.2);
+      transition: all 0.2s;
+    }
+
+    .btn-warning-report:hover {
+      background: #ea580c;
+      transform: translateY(-1px);
+    }
+
+    .btn-logout {
+      background: var(--bg-card);
+      color: var(--danger);
+      border: 1px solid rgba(239, 68, 68, 0.15);
+      font-size: 0.85rem;
+      font-weight: 700;
+      padding: 0.9rem;
+      border-radius: 14px;
+      width: 100%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: all 0.2s;
+    }
+
+    .btn-logout:hover {
+      background: var(--danger-bg);
+    }
+
+    /* Modal dialog popups */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(7, 11, 19, 0.4);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      z-index: 3000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+
+    .modal-container {
+      width: 100%;
+      max-width: 420px;
+      background: var(--bg-card);
+      border-radius: 24px;
+      padding: 2rem;
+      box-shadow: 0 20px 40px rgba(7, 11, 19, 0.15);
+      border: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 1rem;
+      animation: scaleUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .modal-shield-icon {
+      width: 60px;
+      height: 60px;
+      background: rgba(14, 165, 233, 0.08);
+      color: var(--primary-dark);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .modal-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--primary-dark);
+    }
+
+    .modal-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-bottom: 0.75rem;
+    }
+
+    .btn-modal-close {
+      width: 100%;
+      background: var(--primary-dark);
+      color: white;
+      border: none;
+      padding: 0.85rem;
+      font-weight: 700;
+      font-size: 0.9rem;
+      border-radius: 100px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-modal-close:hover {
+      background: var(--primary);
+    }
+
+    /* Habilitated Professional Dashboard View Styles */
+    .pro-dashboard-header {
+      background: var(--primary-dark);
+      color: white;
+      padding: 1.25rem;
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .pro-dashboard-header h3 {
+      font-size: 1.05rem;
+      font-weight: 700;
+    }
+
+    .pro-stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+
+    .pro-stat-card {
+      background: #f8fafc;
+      padding: 0.9rem;
+      border-radius: 12px;
+      border: 1px solid rgba(0, 0, 0, 0.02);
+    }
+
+    .pro-stat-number {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--primary-dark);
+    }
+
+    .pro-stat-lbl {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    /* Custom Toast Notification at bottom */
+    #toast {
+      position: fixed;
+      bottom: 85px; /* Above Bottom nav */
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--primary-dark);
+      color: white;
+      padding: 0.75rem 1.25rem;
+      border-radius: 100px;
+      display: none;
+      align-items: center;
+      gap: 0.5rem;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+      z-index: 1000;
+      font-size: 0.85rem;
+      font-weight: 600;
+      animation: slideUpFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* Fixed Bottom Navigation Bar */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 62px;
+      background: var(--bg-card);
+      border-top: 1px solid rgba(12, 57, 94, 0.06);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 999;
+      box-shadow: 0 -4px 15px rgba(12, 57, 94, 0.02);
+    }
+
+    .nav-tab-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.25rem;
+      background: transparent;
+      border: none;
+      color: #94a3b8;
+      width: 25%;
+      height: 100%;
+      cursor: pointer;
+      font-size: 0.65rem;
+      font-weight: 600;
+      transition: color 0.2s;
+    }
+
+    .nav-tab-btn i {
+      font-size: 1.15rem;
+    }
+
+    .nav-tab-btn.active {
+      color: var(--primary-dark);
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes scaleUp {
+      from { opacity: 0; transform: scale(0.96); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes laserSweep {
+      0% { top: 0%; opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { top: 100%; opacity: 0; }
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes spinBack {
+      to { transform: rotate(-360deg); }
+    }
+
+    @keyframes slideUpFadeIn {
+      from { opacity: 0; transform: translate(-50%, 15px); }
+      to { opacity: 1; transform: translate(-50%, 0); }
+    }
+
+    @media (max-width: 480px) {
+      .action-buttons { grid-template-columns: 1fr; }
+      .grid-info { grid-template-columns: 1fr; }
+      .last-activity-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Screen 1: Login Gate (If not logged in) -->
+  <div id="login-screen">
+    <div class="login-card">
+      <div class="login-icon">
+        <i class="fa-solid fa-house-medical-shield"></i>
+      </div>
+      <h2>PharmaScan AI</h2>
+      <p>Sélectionnez un profil pour vous connecter au portail clinique</p>
+      
+      <!-- Profile Choice 1: Citizen -->
+      <button class="login-btn" onclick="loginAs('citizen')">
+        <div class="login-btn-avatar">AB</div>
+        <div class="login-btn-info">
+          <div class="login-btn-name">Anass Bouras</div>
+          <div class="login-btn-role">Citoyen marocain</div>
+        </div>
+        <i class="fa-solid fa-chevron-right" style="color: var(--text-muted); font-size: 0.8rem;"></i>
+      </button>
+
+      <!-- Profile Choice 2: Agent Habilité -->
+      
+    </div>
+  </div>
+
+  <!-- Main view holds the active tab panels -->
+  
+  <!-- TAB 1: SCANNER -->
+  <div id="tab-scanner" class="tab-view active">
+    <div class="header-banner">
+      <h1>PharmaScan AI</h1>
+      <p>Analyse physico-chimique instantanée par intelligence artificielle</p>
+    </div>
+    
+    <main>
+      <!-- Scanner container box -->
+      <div id="scanner-box" class="card">
+        <div class="scanner-viewport">
+          <div id="laser" class="laser-line"></div>
+          
+          <div class="hud-corners">
+            <div class="hud-corners-inner"></div>
+          </div>
+
+          <video id="video" autoplay playsinline></video>
+          <canvas id="canvas"></canvas>
+
+          <div id="scanner-placeholder" class="placeholder-scanner">
+            <i class="fa-solid fa-qrcode"></i>
+            <div>
+              <h4 style="color: var(--text-main); font-weight: 700; margin-bottom: 0.25rem;">Placer le code du produit</h4>
+              <p style="font-size: 0.75rem; color: var(--text-muted);">Positionnez le code-barres ou l'emballage dans le cadre.</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="action-buttons" style="margin-top: 1rem;">
+          <button id="btn-camera" onclick="startCamera()">
+            <i class="fa-solid fa-camera"></i> Activer Caméra
+          </button>
+          <button id="btn-upload" class="btn-outline" onclick="triggerFileInput()">
+            <i class="fa-solid fa-image"></i> Importer Photo
+          </button>
+          <input type="file" id="file-input" accept="image/*" style="display: none;" onchange="handleFileSelect(event)">
+        </div>
+      </div>
+
+      <!-- Analysis dynamic view -->
+      <div id="analysis-box" class="card analysis-viewport">
+        <div class="double-ring">
+          <div class="ring-outer"></div>
+          <div class="ring-inner"></div>
+          <i class="fa-solid fa-microscope"></i>
+        </div>
+        <div>
+          <h4 style="font-weight: 700; margin-bottom: 0.25rem;">Analyse spectrale IA...</h4>
+          <p id="step-text" class="step-text-holder">Chargement...</p>
+        </div>
+      </div>
+
+      <!-- Detailed Result view -->
+      <div id="result-box" class="result-view">
+        <div id="res-banner" class="banner-result">
+          <div class="banner-icon">
+            <i id="res-icon" class="fa-solid"></i>
+          </div>
+          <h2 id="res-title" class="banner-title"></h2>
+          <div class="banner-score">
+            <i class="fa-solid fa-shield-halved"></i> Score IA : <span id="res-score"></span>%
+          </div>
+        </div>
+
+        <div id="res-msg" class="msg-box"></div>
+
+        <div class="grid-info">
+          <div class="info-box">
+            <div class="info-lbl">Médicament</div>
+            <div id="res-prod-name" class="info-val"></div>
+          </div>
+          <div class="info-box">
+            <div class="info-lbl">Numéro de Lot</div>
+            <div id="res-prod-lot" class="info-val"></div>
+          </div>
+          <div class="info-box">
+            <div class="info-lbl">Fabricant</div>
+            <div id="res-prod-maker" class="info-val"></div>
+          </div>
+          <div class="info-box">
+            <div class="info-lbl">Expiration</div>
+            <div id="res-prod-exp" class="info-val"></div>
+          </div>
+          <div class="info-box" style="grid-column: span 2;">
+            <div class="info-lbl">Pays d'Origine</div>
+            <div id="res-prod-country" class="info-val"></div>
+          </div>
+        </div>
+
+        <div class="card" style="padding: 1rem;">
+          <h4 style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.5rem; letter-spacing: 0.5px;">Marqueurs moléculaires analysés</h4>
+          <div id="res-markers-list"></div>
+        </div>
+
+        <button onclick="resetScanner()" style="width: 100%;">
+          <i class="fa-solid fa-rotate-left"></i> Scanner un autre produit
+        </button>
+      </div>
+    </main>
+  </div>
+
+  <!-- TAB 2: HISTORY -->
+  <div id="tab-history" class="tab-view">
+    <div class="history-count-header">
+      <h1>Historique des scans</h1>
+      <p id="history-subtitle">0 scan enregistré</p>
+    </div>
+    
+    <main>
+      <div id="history-items-list" class="history-list">
+        <!-- List items loaded dynamically -->
+      </div>
+    </main>
+  </div>
+
+  <!-- TAB 3: PROFILE / ACCOUNT -->
+  <div id="tab-profile" class="tab-view">
+    <div class="profile-header-banner">
+      <div id="prof-avatar" class="profile-avatar-circle">AB</div>
+      <div class="profile-user-info">
+        <h1 id="prof-name" class="profile-user-name">Anass Bouras</h1>
+        <p id="prof-email" class="profile-user-email">anass.bouras2018@gmail.com</p>
+        <span class="verified-badge">
+          <i class="fa-solid fa-shield-halved"></i> Compte vérifié
+        </span>
+      </div>
+    </div>
+
+    <main>
+      <!-- Profile general statistics -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <div id="stat-total-scans" class="stat-number">0</div>
+          <div class="stat-lbl">Scans</div>
+        </div>
+        <div class="stat-card">
+          <div id="stat-total-alerts" class="stat-number alert">0</div>
+          <div class="stat-lbl">Alertes</div>
+        </div>
+        <div class="stat-card">
+          <div id="stat-pct-auth" class="stat-number auth">0%</div>
+          <div class="stat-lbl">Authentiques</div>
+        </div>
+      </div>
+
+      <!-- Activity summary row -->
+      <div class="last-activity-row">
+        <div class="activity-summary-card">
+          <div class="activity-summary-lbl">Dernière alerte</div>
+          <div id="act-last-alert" class="activity-summary-time alert">Aucune</div>
+        </div>
+        <div class="activity-summary-card">
+          <div class="activity-summary-lbl">Dernier scan</div>
+          <div id="act-last-scan" class="activity-summary-time">Aucun</div>
+        </div>
+      </div>
+
+      <!-- Bar chart card activity -->
+      <div class="card">
+        <h4 class="activity-chart-title">Activité — 7 derniers jours</h4>
+        <div class="bar-chart-container" id="bar-chart">
+          <!-- Dynamically computed bar chart -->
+        </div>
+      </div>
+
+      <!-- Actions buttons list menu -->
+      <div class="profile-menu">
+        <div class="menu-item-btn" onclick="openDouaneDashboard()">
+          <div class="menu-item-btn-left">
+            <i class="fa-solid fa-shield-halved"></i>
+            <span>Dashboard Douane & ANPM</span>
+          </div>
+          <i class="fa-solid fa-angle-right menu-item-btn-right"></i>
+        </div>
+
+        <div class="menu-item-btn" onclick="triggerBadgePopup()">
+          <div class="menu-item-btn-left">
+            <i class="fa-solid fa-star"></i>
+            <span>Badge "Scan citoyen responsable"</span>
+          </div>
+          <i class="fa-solid fa-angle-right menu-item-btn-right"></i>
+        </div>
+
+        <button class="btn-warning-report" onclick="triggerReportPopup()">
+          <i class="fa-solid fa-triangle-exclamation"></i> Signaler un médicament suspect
+        </button>
+
+        <button class="btn-logout" onclick="logoutAccount()">
+          <i class="fa-solid fa-right-from-bracket"></i> Se déconnecter
+        </button>
+      </div>
+    </main>
+  </div>
+
+  <!-- VIEW 4: AGENT EXCLUSIVE DOWNTOWN DASHBOARD (PRO) -->
+  <div id="tab-pro-dashboard" class="tab-view">
+    <div class="header-banner" style="background-color: var(--primary-dark)">
+      <h1>Portail Douanes & ANPM</h1>
+      <p>Outils d'enquête et de surveillance des contrefaçons pharmaceutiques</p>
+    </div>
+    
+    <main>
+      <div class="pro-dashboard-header">
+        <h3>Agent Habilité : Ahmed Alami</h3>
+        <p style="font-size: 0.75rem; opacity: 0.85;">Direction Générale des Douanes & Pharmacovigilance ANPM</p>
+      </div>
+
+      <div class="pro-stats-grid">
+        <div class="pro-stat-card">
+          <div class="pro-stat-number">14 250</div>
+          <div class="pro-stat-lbl">Saisies Nationales (Semaine)</div>
+        </div>
+        <div class="pro-stat-card">
+          <div class="pro-stat-number" style="color: var(--danger);">3</div>
+          <div class="pro-stat-lbl">Réseaux Démantelés</div>
+        </div>
+        <div class="pro-stat-card">
+          <div class="pro-stat-number" style="color: var(--warning);">98.2%</div>
+          <div class="pro-stat-lbl">Fiabilité du Diagnostic IA</div>
+        </div>
+        <div class="pro-stat-card">
+          <div class="pro-stat-number" style="color: var(--success);">En Ligne</div>
+          <div class="pro-stat-lbl">Liaison Blockchain ANPM</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h4 style="font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: var(--primary-dark); margin-bottom: 0.75rem;">Top Molécules Contrefaites Ciblées</h4>
+        <div style="font-size: 0.8rem; display: flex; flex-direction: column; gap: 0.5rem;">
+          <div style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 0.3rem;">
+            <span>1. Paracétamol (Doliprane, etc.)</span>
+            <strong style="color: var(--danger);">42% des alertes</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 0.3rem;">
+            <span>2. Antibiotiques (Amoxicilline)</span>
+            <strong style="color: var(--danger);">28% des alertes</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between; padding-bottom: 0.1rem;">
+            <span>3. Anti-inflammatoires</span>
+            <strong style="color: var(--danger);">15% des alertes</strong>
+          </div>
+        </div>
+      </div>
+
+      <button onclick="switchTab('profile')" style="width: 100%;">
+        <i class="fa-solid fa-arrow-left"></i> Retour au Profil
+      </button>
+    </main>
+  </div>
+
+  <!-- FIXED BOTTOM NAVIGATION BAR -->
+  <nav class="bottom-nav">
+    <button class="nav-tab-btn active" id="nav-btn-scanner" onclick="switchTab('scanner')">
+      <i class="fa-solid fa-qrcode"></i>
+      <span>Scanner</span>
+    </button>
+    <button class="nav-tab-btn" id="nav-btn-history" onclick="switchTab('history')">
+      <i class="fa-solid fa-clock-rotate-left"></i>
+      <span>Historique</span>
+    </button>
+    <button class="nav-tab-btn" id="nav-btn-profile" onclick="switchTab('profile')">
+      <i class="fa-solid fa-circle-user"></i>
+      <span>Profil</span>
+    </button>
+  </nav>
+
+  <!-- ACCESS RESTRICTED MODAL (For Citizens) -->
+  <div id="restricted-modal" class="modal-overlay">
+    <div class="modal-container">
+      <div class="modal-shield-icon">
+        <i class="fa-solid fa-shield-halved"></i>
+      </div>
+      <h3 class="modal-title">Accès restreint</h3>
+      <p class="modal-desc">
+        Accès réservé aux agents habilités. Veuillez vous connecter avec un compte professionnel ANPM ou du service des Douanes marocaines.
+      </p>
+      <button class="btn-modal-close" onclick="closeRestrictedModal()">Fermer</button>
+    </div>
+  </div>
+
+  <!-- POPUP DETAILS FOR HISTORIC SCANS -->
+  <div id="details-modal" class="modal-overlay" onclick="closeDetailsModal(event)">
+    <div class="modal-container" style="max-height: 85vh; overflow-y: auto; text-align: left; align-items: stretch; max-width: 500px;" onclick="event.stopPropagation()">
+      <div id="modal-res-banner" class="banner-result">
+        <div class="banner-icon">
+          <i id="modal-res-icon" class="fa-solid"></i>
+        </div>
+        <h2 id="modal-res-title" class="banner-title"></h2>
+        <div class="banner-score">
+          <i class="fa-solid fa-shield-halved"></i> Confiance : <span id="modal-res-score"></span>%
+        </div>
+      </div>
+      
+      <div id="modal-res-msg" class="msg-box"></div>
+
+      <div class="grid-info" style="margin-top: 0.5rem;">
+        <div class="info-box">
+          <div class="info-lbl">Médicament</div>
+          <div id="modal-res-name" class="info-val"></div>
+        </div>
+        <div class="info-box">
+          <div class="info-lbl">Lot</div>
+          <div id="modal-res-lot" class="info-val"></div>
+        </div>
+        <div class="info-box">
+          <div class="info-lbl">Fabricant</div>
+          <div id="modal-res-maker" class="info-val"></div>
+        </div>
+        <div class="info-box">
+          <div class="info-lbl">Expiration</div>
+          <div id="modal-res-exp" class="info-val"></div>
+        </div>
+      </div>
+
+      <div id="modal-markers-card" style="margin-top: 0.5rem;">
+        <h4 style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.5rem;">Marqueurs moléculaires</h4>
+        <div id="modal-res-markers-list"></div>
+      </div>
+
+      <button class="btn-modal-close" style="margin-top: 0.5rem; border-radius: 12px;" onclick="document.getElementById('details-modal').style.display = 'none';">Fermer</button>
+    </div>
+  </div>
+
+  <!-- Generic Popups for Demo Info -->
+  <div id="demo-modal" class="modal-overlay">
+    <div class="modal-container">
+      <div class="modal-shield-icon" id="demo-modal-icon">
+        <i class="fa-solid fa-award"></i>
+      </div>
+      <h3 class="modal-title" id="demo-modal-title">Titre</h3>
+      <p class="modal-desc" id="demo-modal-desc">Description</p>
+      <button class="btn-modal-close" onclick="closeDemoModal()">D'accord</button>
+    </div>
+  </div>
+
+  <!-- Custom Toast notification -->
+  <div id="toast">
+    <i class="fa-solid fa-trash-can"></i>
+    <span id="toast-text">Entrée supprimée</span>
+  </div>
+
+  <script>
+    // Global State variables
+    let streamRef = null;
+    let canvasAnimationId = null;
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const laser = document.getElementById('laser');
+    const placeholder = document.getElementById('scanner-placeholder');
+    
+    // Default mock data (Doliprane)
+    const DEFAULT_DECISION = {
+      verdict: true,
+      nom: "Doliprane 1000 mg (Comprimés)",
+      lot: "23B12",
+      fabricant: "Sanofi Aventis France",
+      exp: "2028-12",
+      pays: "France",
+      score: 99.8,
+      message: "Ce produit a été certifié authentique. Les codes d'emballage, le profil spectroscopique moléculaire ainsi que le numéro de lot correspondent parfaitement aux données du fabricant.",
+      marqueurs: [
+        "Marqueur d'encre réactif UV présent",
+        "Micro-gravure laser active sur le blister",
+        "Formulation chimique conforme par spectroscopie",
+        "Code QR unique enregistré dans la blockchain"
+      ]
+    };
+
+    // French month dictionary for timestamps
+    const MONTHS = ['janv.', 'févr.', 'mars', 'avril', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'];
+
+    // Profiles Configuration
+    const PROFILES = {
+      citizen: {
+        id: 'citizen',
+        name: 'Anass Bouras',
+        email: 'anass.bouras2018@gmail.com',
+        initials: 'AB',
+        isAgent: false
+      },
+      agent: {
+        id: 'agent',
+        name: 'Ahmed Alami',
+        email: 'ahmed.alami@douane.gov.ma',
+        initials: 'AA',
+        isAgent: true
+      }
+    };
+
+    // Active session profile state
+    let currentUser = null;
+
+    // Load session / database on page load
+    window.addEventListener('load', () => {
+      // Check auth state in sessionStorage
+      const savedUser = sessionStorage.getItem('ps_current_user');
+      if (savedUser) {
+        currentUser = JSON.parse(savedUser);
+        document.getElementById('login-screen').style.display = 'none';
+        initializeProfileView();
+      } else {
+        // Show login view
+        document.getElementById('login-screen').style.display = 'flex';
+      }
+
+      initCanvasPlaceholder();
+      renderHistoryList();
+    });
+
+    // Login logic
+    function loginAs(profileKey) {
+      currentUser = PROFILES[profileKey];
+      sessionStorage.setItem('ps_current_user', JSON.stringify(currentUser));
+      document.getElementById('login-screen').style.display = 'none';
+      initializeProfileView();
+      showToast("Connexion réussie en tant que " + currentUser.name, "fa-circle-user");
+    }
+
+    function logoutAccount() {
+      sessionStorage.removeItem('ps_current_user');
+      stopCamera();
+      document.getElementById('login-screen').style.display = 'flex';
+      resetScanner();
+    }
+
+    function initializeProfileView() {
+      if (!currentUser) return;
+      
+      // Update avatar and labels in Profil tab
+      document.getElementById('prof-avatar').textContent = currentUser.initials;
+      document.getElementById('prof-name').textContent = currentUser.name;
+      document.getElementById('prof-email').textContent = currentUser.email;
+
+      if (currentUser.isAgent) {
+        document.getElementById('prof-avatar').style.backgroundColor = 'var(--primary-dark)';
+      } else {
+        document.getElementById('prof-avatar').style.backgroundColor = '#3498db';
+      }
+
+      // Re-calculate statistics and redraw chart
+      recomputeStats();
+    }
+
+    // Switch Tab Panels
+    function switchTab(tabId) {
+      stopCamera();
+      
+      // Hide all tabs
+      document.querySelectorAll('.tab-view').forEach(view => {
+        view.classList.remove('active');
+      });
+
+      // Show active tab
+      const targetTab = document.getElementById('tab-' + tabId);
+      if (targetTab) {
+        targetTab.classList.add('active');
+      }
+
+      // Handle active button class in nav
+      document.querySelectorAll('.nav-tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+
+      const activeBtn = document.getElementById('nav-btn-' + tabId);
+      if (activeBtn) {
+        activeBtn.classList.add('active');
+      }
+
+      // If switching to history/profile, refresh database states
+      if (tabId === 'history') {
+        renderHistoryList();
+      } else if (tabId === 'profile') {
+        recomputeStats();
+      }
+    }
+
+    // Canvas Background Drawer
+    function initCanvasPlaceholder() {
+      canvas.width = 640;
+      canvas.height = 480;
+      ctx.fillStyle = '#0a1628';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      drawHologramUI();
+    }
+
+    function drawHologramUI() {
+      ctx.save();
+      // Grid lines
+      ctx.strokeStyle = 'rgba(14, 165, 233, 0.08)';
+      ctx.lineWidth = 1;
+      const step = 40;
+      for (let x = 0; x < canvas.width; x += step) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
+      }
+      for (let y = 0; y < canvas.height; y += step) {
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
+      }
+
+      // HUD crosshairs
+      ctx.translate(canvas.width / 2, canvas.height / 2);
+      ctx.strokeStyle = 'rgba(14, 165, 233, 0.25)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(0, 0, 90, 0, Math.PI * 2);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.arc(0, 0, 110, 0, Math.PI * 2);
+      ctx.setLineDash([8, 12]);
+      ctx.stroke();
+
+      ctx.restore();
+    }
+
+    // Camera Access
+    async function startCamera() {
+      if (streamRef) stopCamera();
+
+      placeholder.style.display = 'none';
+      laser.style.display = 'block';
+
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } }
+        });
+        streamRef = stream;
+        video.srcObject = stream;
+        video.onloadedmetadata = () => {
+          canvas.width = video.videoWidth;
+          canvas.height = video.videoHeight;
+          drawLoop();
+          setTimeout(runMolecularScan, 2200);
+        };
+      } catch (err) {
+        console.warn("Camera blocked or unavailable, launching simulation.", err);
+        setTimeout(runMolecularScan, 1800);
+      }
+    }
+
+    function stopCamera() {
+      if (streamRef) {
+        streamRef.getTracks().forEach(t => t.stop());
+        streamRef = null;
+      }
+      if (canvasAnimationId) {
+        cancelAnimationFrame(canvasAnimationId);
+        canvasAnimationId = null;
+      }
+      laser.style.display = 'none';
+    }
+
+    function drawLoop() {
+      if (!streamRef) return;
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      
+      // HUD filter on top of live camera stream
+      ctx.fillStyle = 'rgba(12, 57, 94, 0.04)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.strokeStyle = 'rgba(14, 165, 233, 0.5)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(canvas.width / 2, canvas.height / 2, 70, 0, Math.PI * 2);
+      ctx.stroke();
+
+      canvasAnimationId = requestAnimationFrame(drawLoop);
+    }
+
+    function triggerFileInput() {
+      document.getElementById('file-input').click();
+    }
+
+    function handleFileSelect(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      stopCamera();
+      placeholder.style.display = 'none';
+      laser.style.display = 'block';
+
+      const img = new Image();
+      img.onload = () => {
+        canvas.width = 640;
+        canvas.height = 480;
+        const scale = Math.min(canvas.width / img.width, canvas.height / img.height);
+        const x = (canvas.width - img.width * scale) / 2;
+        const y = (canvas.height - img.height * scale) / 2;
+
+        ctx.fillStyle = '#0a1628';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
+        
+        ctx.fillStyle = 'rgba(14, 165, 233, 0.06)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        setTimeout(runMolecularScan, 1500);
+      };
+
+      const reader = new FileReader();
+      reader.onload = (event) => { img.src = event.target.result; };
+      reader.readAsDataURL(file);
+    }
+
+    // Sequence Simulation steps
+    const SCAN_STEPS = [
+      { text: "Liaison au capteur optique...", time: 0 },
+      { text: "Acquisition spectrographique...", time: 500 },
+      { text: "Comparaison de signature moléculaire...", time: 1100 },
+      { text: "Vérification blockchain ANPM...", time: 1700 }
+    ];
+
+    function runMolecularScan() {
+      stopCamera();
+      document.getElementById('scanner-box').style.display = 'none';
+      document.getElementById('analysis-box').style.display = 'flex';
+
+      const stepText = document.getElementById('step-text');
+      
+      SCAN_STEPS.forEach(step => {
+        setTimeout(() => {
+          stepText.textContent = step.text;
+        }, step.time);
+      });
+
+      // Reveal result and save to history database
+      setTimeout(renderDecisionResult, 2400);
+    }
+
+    // Render result page and persist in history
+    function renderDecisionResult() {
+      // 1. Fetch active admin decision or set default Doliprane
+      let decision = DEFAULT_DECISION;
+      try {
+        const stored = localStorage.getItem('admin_decision');
+        if (stored) {
+          decision = JSON.parse(stored);
+        }
+      } catch (err) {
+        console.error("Storage error, loading Doliprane default.", err);
+      }
+
+      // Ensure verdict boolean
+      const isAuth = decision.verdict === true || decision.verdict === 'true';
+
+      // 2. Format details and UI fields
+      const banner = document.getElementById('res-banner');
+      const icon = document.getElementById('res-icon');
+      const title = document.getElementById('res-title');
+      const score = document.getElementById('res-score');
+      const msg = document.getElementById('res-msg');
+
+      banner.className = 'banner-result';
+      if (isAuth) {
+        banner.classList.add('banner-auth');
+        icon.className = 'fa-solid fa-circle-check';
+        title.textContent = "PRODUIT AUTHENTIQUE";
+      } else {
+        banner.classList.add('banner-fake');
+        icon.className = 'fa-solid fa-triangle-exclamation';
+        title.textContent = "ALERTE CONTREFAÇON";
+      }
+
+      score.textContent = decision.score || (isAuth ? "99.8" : "14.5");
+      msg.textContent = decision.message || (isAuth ? "Ce produit est authentique." : "Alerte : contrefaçon détectée.");
+
+      document.getElementById('res-prod-name').textContent = decision.nom || 'Médicament Inconnu';
+      document.getElementById('res-prod-lot').textContent = decision.lot || '--';
+      document.getElementById('res-prod-maker').textContent = decision.fabricant || '--';
+      
+      // Expiration date
+      const expVal = decision.exp || '';
+      if (expVal && expVal.split('-').length === 2) {
+        const p = expVal.split('-');
+        document.getElementById('res-prod-exp').textContent = `${p[1]}/${p[0]}`;
+      } else {
+        document.getElementById('res-prod-exp').textContent = expVal || '--';
+      }
+
+      document.getElementById('res-prod-country').textContent = decision.pays || '--';
+
+      // Markers checklists
+      const markerListDiv = document.getElementById('res-markers-list');
+      markerListDiv.innerHTML = '';
+
+      const markers = decision.marqueurs || [];
+      if (markers.length === 0) {
+        const fallback = isAuth 
+          ? ["Signature chimique certifiée", "Sceau holographique conforme"]
+          : ["⚠️ Signature chimique contrefaite", "⚠️ Absence de sceau holographique"];
+        fallback.forEach(m => addMarkerLine(markerListDiv, m, isAuth));
+      } else {
+        markers.forEach(m => addMarkerLine(markerListDiv, m, isAuth));
+      }
+
+      // 3. Persist scan in the user's scan history!
+      saveScanToHistory(decision, isAuth);
+
+      // Hide loading, show results
+      document.getElementById('analysis-box').style.display = 'none';
+      document.getElementById('result-box').style.display = 'flex';
+    }
+
+    function addMarkerLine(container, text, success) {
+      const div = document.createElement('div');
+      div.className = 'marker-li';
+      const icon = success ? 'fa-solid fa-circle-check' : 'fa-solid fa-circle-xmark';
+      div.innerHTML = `<i class="${icon}"></i> <span>${text}</span>`;
+      container.appendChild(div);
+    }
+
+    // Save scan inside localStorage scan_history array
+    function saveScanToHistory(decision, isAuth) {
+      let history = [];
+      try {
+        const stored = localStorage.getItem('scan_history');
+        if (stored) {
+          history = JSON.parse(stored);
+        }
+      } catch (e) {
+        console.error(e);
+      }
+
+      // Create a french formatted timestamp
+      const now = new Date();
+      const day = now.getDate();
+      const month = MONTHS[now.getMonth()];
+      const hour = String(now.getHours()).padStart(2, '0');
+      const min = String(now.getMinutes()).padStart(2, '0');
+      const timestampText = `${day} ${month}, ${hour}:${min}`;
+
+      const newScan = {
+        id: Date.now(),
+        nom: decision.nom || 'Médicament suspect',
+        lot: decision.lot || '--',
+        fabricant: decision.fabricant || '--',
+        exp: decision.exp || '',
+        pays: decision.pays || '--',
+        score: decision.score || (isAuth ? 99.8 : 14.5),
+        message: decision.message || '',
+        marqueurs: decision.marqueurs || [],
+        verdict: isAuth,
+        timestamp: timestampText,
+        dayIndex: now.getDay() // 0 = Sunday, 1 = Monday ... 6 = Saturday
+      };
+
+      // Add to front of history list
+      history.unshift(newScan);
+      localStorage.setItem('scan_history', JSON.stringify(history));
+
+      // Dynamically increment the daily bar chart value
+      incrementDailyActivity(now.getDay());
+    }
+
+    // Manage activity counts for the 7 days (Dimanche=0, Lundi=1 ... Samedi=6)
+    function incrementDailyActivity(dayIndex) {
+      let activity = [0, 0, 0, 0, 0, 0, 2]; // Preloaded mock values (Saturday has 2 scans like the screenshot)
+      try {
+        const stored = localStorage.getItem('scan_activity_counts');
+        if (stored) {
+          activity = JSON.parse(stored);
+        }
+      } catch (e) {}
+
+      activity[dayIndex] = (activity[dayIndex] || 0) + 1;
+      localStorage.setItem('scan_activity_counts', JSON.stringify(activity));
+    }
+
+    // Load and render History list
+    function renderHistoryList() {
+      const container = document.getElementById('history-items-list');
+      const subtitle = document.getElementById('history-subtitle');
+      container.innerHTML = '';
+
+      let history = [];
+      try {
+        const stored = localStorage.getItem('scan_history');
+        if (stored) {
+          history = JSON.parse(stored);
+        }
+      } catch (e) {}
+
+      // Update subtitle count
+      const count = history.length;
+      subtitle.textContent = `${count} scan${count > 1 ? 's' : ''} enregistré${count > 1 ? 's' : ''}`;
+
+      if (count === 0) {
+        container.innerHTML = `
+          <div class="history-empty">
+            <i class="fa-solid fa-folder-open"></i>
+            <div>Aucun scan enregistré dans l'historique.</div>
+          </div>
+        `;
+        return;
+      }
+
+      history.forEach(scan => {
+        const card = document.createElement('div');
+        card.className = 'history-card';
+        card.onclick = () => openDetailsModal(scan);
+
+        const iconClass = scan.verdict ? 'history-icon-auth' : 'history-icon-fake';
+        const badgeClass = scan.verdict ? 'history-badge-auth' : 'history-badge-fake';
+        const badgeText = scan.verdict ? 'Authentique' : 'Faux';
+
+        card.innerHTML = `
+          <div class="history-icon-circle ${iconClass}">
+            <i class="fa-solid fa-pills"></i>
+          </div>
+          <div class="history-details">
+            <div class="history-title">${scan.nom}</div>
+            <div class="history-time">${scan.timestamp}</div>
+          </div>
+          <div style="display: flex; align-items: center;">
+            <span class="history-badge ${badgeClass}">${badgeText}</span>
+            <button class="btn-delete-history" onclick="deleteHistoryItem(event, ${scan.id})">
+              <i class="fa-solid fa-trash-can"></i>
+            </button>
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+    }
+
+    // Delete item from history list
+    function deleteHistoryItem(event, scanId) {
+      event.stopPropagation(); // Avoid triggering openDetailsModal
+
+      let history = [];
+      try {
+        const stored = localStorage.getItem('scan_history');
+        if (stored) {
+          history = JSON.parse(stored);
+        }
+      } catch (e) {}
+
+      const updatedHistory = history.filter(item => item.id !== scanId);
+      localStorage.setItem('scan_history', JSON.stringify(updatedHistory));
+      
+      // Refresh UI
+      renderHistoryList();
+      showToast("Entrée supprimée");
+      
+      // Update statistics panel immediately if we are on Profile tab
+      recomputeStats();
+    }
+
+    // Refresh statistcal counters on Profil Tab
+    function recomputeStats() {
+      let history = [];
+      try {
+        const stored = localStorage.getItem('scan_history');
+        if (stored) {
+          history = JSON.parse(stored);
+        }
+      } catch (e) {}
+
+      const total = history.length;
+      const fakes = history.filter(s => s.verdict === false).length;
+      const authentics = total - fakes;
+      const pctAuth = total > 0 ? Math.round((authentics / total) * 100) : 0;
+
+      // Stats DOM elements update
+      document.getElementById('stat-total-scans').textContent = total;
+      document.getElementById('stat-total-alerts').textContent = fakes;
+      document.getElementById('stat-pct-auth').textContent = `${pctAuth}%`;
+
+      // Last activity details
+      const lastScanText = document.getElementById('act-last-scan');
+      const lastAlertText = document.getElementById('act-last-alert');
+
+      if (total > 0) {
+        lastScanText.textContent = history[0].timestamp;
+      } else {
+        lastScanText.textContent = "Aucun";
+      }
+
+      const lastAlertScan = history.find(s => s.verdict === false);
+      if (lastAlertScan) {
+        lastAlertText.textContent = lastAlertScan.timestamp;
+      } else {
+        lastAlertText.textContent = "Aucune";
+      }
+
+      // Render 7-day activity bar chart
+      renderActivityChart();
+    }
+
+    // Dynamic bar chart drawing
+    function renderActivityChart() {
+      const container = document.getElementById('bar-chart');
+      container.innerHTML = '';
+
+      let counts = [0, 0, 0, 0, 0, 0, 2]; // Default Saturday = 2 scans loaded
+      try {
+        const stored = localStorage.getItem('scan_activity_counts');
+        if (stored) {
+          counts = JSON.parse(stored);
+        } else {
+          // Store default counts on first profile check
+          localStorage.setItem('scan_activity_counts', JSON.stringify(counts));
+        }
+      } catch (e) {}
+
+      const days = ['D', 'L', 'M', 'M', 'J', 'V', 'S'];
+      const maxCount = Math.max(...counts, 1);
+
+      days.forEach((day, index) => {
+        const countVal = counts[index] || 0;
+        const col = document.createElement('div');
+        col.className = 'chart-bar-col';
+
+        // CSS Bar calculations
+        const bar = document.createElement('div');
+        if (countVal === 0) {
+          bar.className = 'bar-pill flat';
+        } else {
+          bar.className = 'bar-pill';
+          const heightPct = Math.round((countVal / maxCount) * 85); // Caps height at 85%
+          bar.style.height = `${Math.max(heightPct, 12)}%`; // Minimum height for 1 scan
+        }
+
+        col.innerHTML = `
+          ${bar.outerHTML}
+          <span class="chart-day-label">${day}</span>
+        `;
+        container.appendChild(col);
+      });
+    }
+
+    // Open scan detail modal
+    function openDetailsModal(scan) {
+      const modal = document.getElementById('details-modal');
+      const banner = document.getElementById('modal-res-banner');
+      const icon = document.getElementById('modal-res-icon');
+      const title = document.getElementById('modal-res-title');
+      const score = document.getElementById('modal-res-score');
+      const msg = document.getElementById('modal-res-msg');
+
+      banner.className = 'banner-result';
+      if (scan.verdict) {
+        banner.classList.add('banner-auth');
+        icon.className = 'fa-solid fa-circle-check';
+        title.textContent = "PRODUIT AUTHENTIQUE";
+      } else {
+        banner.classList.add('banner-fake');
+        icon.className = 'fa-solid fa-triangle-exclamation';
+        title.textContent = "ALERTE CONTREFAÇON";
+      }
+
+      score.textContent = scan.score;
+      msg.textContent = scan.message || (scan.verdict ? "Ce produit est certifié conforme." : "Ce produit présente des risques.");
+      
+      document.getElementById('modal-res-name').textContent = scan.nom;
+      document.getElementById('modal-res-lot').textContent = scan.lot;
+      document.getElementById('modal-res-maker').textContent = scan.fabricant;
+      
+      const expVal = scan.exp || '';
+      if (expVal && expVal.split('-').length === 2) {
+        const p = expVal.split('-');
+        document.getElementById('modal-res-exp').textContent = `${p[1]}/${p[0]}`;
+      } else {
+        document.getElementById('modal-res-exp').textContent = expVal || '--';
+      }
+
+      const markersDiv = document.getElementById('modal-res-markers-list');
+      markersDiv.innerHTML = '';
+      
+      const markers = scan.marqueurs || [];
+      if (markers.length === 0) {
+        const fb = scan.verdict 
+          ? ["Signature chimique vérifiée", "Sceau de traçabilité conforme"]
+          : ["⚠️ Anomalies de signature chimique", "⚠️ Sceau de traçabilité invalide"];
+        fb.forEach(m => addMarkerLine(markersDiv, m, scan.verdict));
+      } else {
+        markers.forEach(m => addMarkerLine(markersDiv, m, scan.verdict));
+      }
+
+      modal.style.display = 'flex';
+    }
+
+    function closeDetailsModal(e) {
+      document.getElementById('details-modal').style.display = 'none';
+    }
+
+    // Modal Douane & ANPM Dashboards Access
+    function openDouaneDashboard() {
+      if (!currentUser) return;
+
+      if (currentUser.isAgent) {
+        // Habilitated access: Show the professional Dashboard
+        switchTab('pro-dashboard');
+      } else {
+        // Restricted access: show Warning Modal Dialog
+        document.getElementById('restricted-modal').style.display = 'flex';
+      }
+    }
+
+    function closeRestrictedModal() {
+      document.getElementById('restricted-modal').style.display = 'none';
+    }
+
+    // Generic Popup handlers
+    function triggerBadgePopup() {
+      const icon = document.getElementById('demo-modal-icon');
+      const title = document.getElementById('demo-modal-title');
+      const desc = document.getElementById('demo-modal-desc');
+
+      icon.innerHTML = '<i class="fa-solid fa-award"></i>';
+      icon.style.color = '#e74c3c';
+      title.textContent = 'Badge "Citoyen Responsable"';
+      desc.textContent = "Félicitations ! Vous possédez ce badge honorifique. Il récompense les citoyens marocains actifs signalant des contrefaçons pharmaceutiques et protégeant ainsi la santé publique.";
+      
+      document.getElementById('demo-modal').style.display = 'flex';
+    }
+
+    function triggerReportPopup() {
+      const icon = document.getElementById('demo-modal-icon');
+      const title = document.getElementById('demo-modal-title');
+      const desc = document.getElementById('demo-modal-desc');
+
+      icon.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i>';
+      icon.style.color = '#f39c12';
+      title.textContent = 'Signalement Médical';
+      desc.textContent = "Formulaire de signalement de pharmacovigilance transmis avec succès aux Douanes marocaines et à l'ANPM pour inspection. Merci de votre contribution.";
+      
+      document.getElementById('demo-modal').style.display = 'flex';
+    }
+
+    function closeDemoModal() {
+      document.getElementById('demo-modal').style.display = 'none';
+    }
+
+    // Reset scanner viewport states
+    function resetScanner() {
+      stopCamera();
+      document.getElementById('result-box').style.display = 'none';
+      document.getElementById('analysis-box').style.display = 'none';
+      document.getElementById('scanner-box').style.display = 'block';
+      placeholder.style.display = 'flex';
+      initCanvasPlaceholder();
+      document.getElementById('file-input').value = '';
+    }
+
+    // Toast Notification helper
+    function showToast(text, iconClass = 'fa-trash-can') {
+      const toast = document.getElementById('toast');
+      const toastText = document.getElementById('toast-text');
+      const toastIcon = toast.querySelector('i');
+
+      toastText.textContent = text;
+      toastIcon.className = `fa-solid ${iconClass}`;
+      
+      toast.style.display = 'flex';
+      setTimeout(() => {
+        toast.style.display = 'none';
+      }, 2500);
+    }
+  </script>
+</body>
+</html>
